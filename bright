@@ -1,0 +1,33 @@
+#!/bin/bash
+# Author: CrazyA
+# Needed something for my HP dm1 because brightness keys didn't work out of the box
+#
+# Add this to your /etc/rc.local so we can actually write here as a regular user
+# chmod go+w /sys/class/backlight/acpi_video0/brightness
+#
+# Bind 'bright -' and 'bright +' to some keyboard shortcuts and enjoy
+#
+CURRENT=`cat /sys/class/backlight/acpi_video0/brightness`
+if [ -z "$1" ]; then
+  echo $CURRENT
+else
+  if [ $1 = "+" ]; then
+    MAX=`cat /sys/class/backlight/acpi_video0/max_brightness`
+    if [ $CURRENT -lt $MAX ]; then
+      NEW=$(expr $CURRENT + 1)
+      echo $NEW > /sys/class/backlight/acpi_video0/brightness
+      echo $NEW
+    else
+      echo $CURRENT
+    fi
+  else
+    if [ $CURRENT -gt 0 ]; then
+      NEW=$(expr $CURRENT - 1)
+      echo $NEW > /sys/class/backlight/acpi_video0/brightness
+      echo $NEW
+    else
+      echo $CURRENT
+    fi
+  fi
+fi
+
